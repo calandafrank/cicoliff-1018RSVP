@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【出席回覆】10/18 台北旗艦店開幕</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h3>你正在填寫【出席回覆】10/18 台北旗艦店開幕</h3>
+
+  <script>
+    // 替換成你的 LIFF ID
+    const liffId = "2007968411-QeAGOEba"; 
+
+    async function main() {
+      await liff.init({ liffId });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        // 取得使用者 profile
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+        
+        // 將 userId 加入 Fillout 表單連結
+        const filloutURL = `https://forms.fillout.com/t/jnH8reiuRPus?userid=${userId}`;
+        
+        // 導向 Fillout 表單
+        window.location.href = filloutURL;
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
