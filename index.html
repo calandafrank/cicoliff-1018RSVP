@@ -3,48 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>【出席回覆】10/18 開幕活動｜凝聚運動顧問｜台北旗艦店</title>
+  <title>Fillout 預約表單</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; box-sizing:border-box; }
-    #notification-bar {
-      display:none;
-      background-color:#ffcc00;
-      color:black;
-      text-align:center;
-      padding:10px;
-      font-size:16px;
-      position:fixed; top:0; left:0; width:100%; z-index:9999;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 20px;
+      display: flex; flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
-    #notification-bar button {
-      background-color:#4CAF50; color:white; padding:10px; border:none; cursor:pointer;
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
     }
-    #notification-bar button:hover { background-color:#45a049; }
-    #qr-code-container {
-      display:none;
-      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-      background-color:white; padding:20px; box-shadow:0px 4px 6px rgba(0,0,0,0.1); z-index:10000;
-      text-align:center;
+    #qr-code {
+      width: 250px;
+      height: 250px;
+      margin-bottom: 20px;
     }
-    #qr-code-container img { max-width:100%; height:auto; }
-    #qr-code-container button {
-      margin-top:20px; background-color:#FF5733; color:white; padding:10px; border:none; cursor:pointer;
+    #thankyou-msg {
+      display: none;
+      text-align: center;
+      font-size: 18px;
+      color: green;
+      margin-top: 30px;
     }
-    #qr-code-container button:hover { background-color:#FF4527; }
   </style>
 </head>
 <body>
 
-<div id="notification-bar">
-  <span>請使用手機版 LINE 掃碼填寫表單。</span>
-  <button id="generate-qr-code">點我生成 QR Code</button>
-</div>
+<h2>請使用手機掃描 QR Code 填寫表單</h2>
+<img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?data=https://cico.pse.is/251018&size=250x250" alt="QR Code">
 
-<div id="qr-code-container">
-  <p>使用手機掃描以下 QR Code 開啟 LIFF 表單：</p>
-  <img id="qr-code" src="" alt="QR Code">
-  <button onclick="closeQRCode()">關閉</button>
-</div>
+<div id="thankyou-msg">感謝填寫！我們已收到你的預約資訊。</div>
 
 <script>
   const LIFF_ID = "2001467446-KNVd49W2"; // 替換成你的 LIFF ID
