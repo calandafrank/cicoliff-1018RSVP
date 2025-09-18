@@ -3,35 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>【出席回覆】10/18 台北旗艦店開幕</title>
+  <title>【出席回覆】10/18 開幕活動｜凝聚運動顧問｜台北旗艦店</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; box-sizing:border-box; }
+    #notification-bar {
+      display:none;
+      background-color:#ffcc00;
+      color:black;
+      text-align:center;
+      padding:10px;
+      font-size:16px;
+      position:fixed; top:0; left:0; width:100%; z-index:9999;
+    }
+    #notification-bar button {
+      background-color:#4CAF50; color:white; padding:10px; border:none; cursor:pointer;
+    }
+    #notification-bar button:hover { background-color:#45a049; }
+    #qr-code-container {
+      display:none;
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      background-color:white; padding:20px; box-shadow:0px 4px 6px rgba(0,0,0,0.1); z-index:10000;
+      text-align:center;
+    }
+    #qr-code-container img { max-width:100%; height:auto; }
+    #qr-code-container button {
+      margin-top:20px; background-color:#FF5733; color:white; padding:10px; border:none; cursor:pointer;
+    }
+    #qr-code-container button:hover { background-color:#FF4527; }
+  </style>
 </head>
 <body>
-  <h3>你正在填寫【出席回覆】10/18 台北旗艦店開幕</h3>
 
-  <script>
-    // 替換成你的 LIFF ID
-    const liffId = "2007968411-QeAGOEba"; 
+<div id="notification-bar">
+  <span>請使用手機版 LINE 掃碼填寫表單。</span>
+  <button id="generate-qr-code">點我生成 QR Code</button>
+</div>
 
-    async function main() {
-      await liff.init({ liffId });
+<div id="qr-code-container">
+  <p>使用手機掃描以下 QR Code 開啟 LIFF 表單：</p>
+  <img id="qr-code" src="" alt="QR Code">
+  <button onclick="closeQRCode()">關閉</button>
+</div>
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
-      } else {
-        // 取得使用者 profile
-        const profile = await liff.getProfile();
-        const userId = profile.userId;
-        
-        // 將 userId 加入 Fillout 表單連結
-        const filloutURL = `https://forms.fillout.com/t/jnH8reiuRPus?userid=${userId}`;
-        
-        // 導向 Fillout 表單
-        window.location.href = filloutURL;
-      }
+<script>
+  const LIFF_ID = "2001467446-KNVd49W2"; // 替換成你的 LIFF ID
+  const FILL_OUT_BASE_URL = "https://forms.fillout.com/t/jnH8reiuRPus"; // 替換你的表單連結
+
+  function isLINEApp() {
+    return /line\//i.test(navigator.userAgent);
+  }
+
+  function isMobile() {
+    return /Mobi|Android|iPhone/i.test(navigator.userAgent);
+  }
+
+  function generateQRCode() {
+    const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(window.location.href) + "&size=250x250";
+    document.getElementById("qr-code").src = qrCodeUrl;
+    document.getElementById("qr-code-container").style.display = "block";
+  }
+
+  function closeQRCode() { document.getElementById("qr-code-container").style.display = "none"; }
+
+  async function main() {
+    if (isLINEApp()) {
+      await liff.init({ liffId: LIFF_ID });
+      if (!liff.isLoggedIn()) liff.login();
+      const profile = await liff.getProfile();
+      const userId = profile.userId;
+
+      // 自動帶入 userId
+      const filloutURL = `${FILL_OUT_BASE_URL}?userid=${userId}&redirect_url=${encodeURIComponent(window.location.href + "?submitted=true")}`;
+      
+      // 跳轉到 Fillout
+      window.location.href = filloutURL;
+    } else if (isMobile()) {
+      // 手機非 LINE App
+      document.getElementById("notification-bar").style.display = "block";
+      alert("請用 LINE App 打開此連結以自動填入表單。");
+    } else {
+      // 桌面端
+      document.getElementById("notification-bar").style.display = "block";
     }
 
-    main();
-  </script>
+    document.getElementById("generate-qr-code").onclick = generateQRCode;
+  }
+
+  main();
+
+  // Fillout 表單提交完成後自動關閉 LIFF
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("submitted") === "true") {
+    if (isLINEApp()) {
+      // 關閉 LIFF 視窗
+      liff.closeWindow();
+    } else {
+      // 非 LINE App 可顯示完成訊息
+      alert("感謝填寫！我們已收到你的預約資訊。您現在可以關閉視窗");
+    }
+  }
+</script>
+
 </body>
 </html>
