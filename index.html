@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fillout 預約表單</title>
+  <title>【敬請回覆】10/18 開幕活動 @ 台北旗艦店｜凝聚運動顧問</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body {
@@ -35,14 +35,19 @@
 </head>
 <body>
 
-<h2>請使用手機掃描 QR Code 填寫表單</h2>
-<img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?data=https://cico.pse.is/251018&size=250x250" alt="QR Code">
+<!-- QR Code 及提示文字，只給桌面或非 LINE 手機用戶 -->
+<div id="qr-container" style="display:none;">
+  <h2>請使用手機掃描 QR Code 填寫表單</h2>
+  <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?data=https://cico.pse.is/251018&size=350x350" alt="QR Code">
+</div>
 
 <div id="thankyou-msg">感謝填寫！我們已收到你的預約資訊。</div>
 
+<script>    if(navigator.userAgent.includes("Instagram")){        window.location.href = "https://liff.line.me/2001467446-KNVd49W2";    } </script>
+
 <script>
   const LIFF_ID = "2001467446-KNVd49W2"; // 替換成你的 LIFF ID
-  const FILL_OUT_BASE_URL = "https://forms.fillout.com/t/jnH8reiuRPus"; // 替換你的表單連結
+  const FILL_OUT_BASE_URL = "https://forms.fillout.com/t/jnH8reiuRPus"; // 替換你的 Fillout 表單
 
   function isLINEApp() {
     return /line\//i.test(navigator.userAgent);
@@ -52,15 +57,10 @@
     return /Mobi|Android|iPhone/i.test(navigator.userAgent);
   }
 
-  function generateQRCode() {
-    const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(window.location.href) + "&size=250x250";
-    document.getElementById("qr-code").src = qrCodeUrl;
-    document.getElementById("qr-code-container").style.display = "block";
-  }
 
-  function closeQRCode() { document.getElementById("qr-code-container").style.display = "none"; }
 
   async function main() {
+    // LINE App 手機版 → 秒轉 Fillout
     if (isLINEApp()) {
       await liff.init({ liffId: LIFF_ID });
       if (!liff.isLoggedIn()) liff.login();
@@ -69,34 +69,22 @@
 
       // 自動帶入 userId
       const filloutURL = `${FILL_OUT_BASE_URL}?userid=${userId}&redirect_url=${encodeURIComponent(window.location.href + "?submitted=true")}`;
-      
-      // 跳轉到 Fillout
       window.location.href = filloutURL;
-    } else if (isMobile()) {
-      // 手機非 LINE App
-      document.getElementById("notification-bar").style.display = "block";
-      alert("請用 LINE App 打開此連結以自動填入表單。");
-    } else {
-      // 桌面端
-      document.getElementById("notification-bar").style.display = "block";
+      return; // 停止渲染 QR Code
     }
 
-    document.getElementById("generate-qr-code").onclick = generateQRCode;
+    // 桌面端或手機非 LINE App → 顯示 QR Code
+    const qrContainer = document.getElementById("qr-container");
+    qrContainer.style.display = "block";
+
+    // 判斷 Fillout 提交完成
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("submitted") === "true") {
+      document.getElementById("thankyou-msg").style.display = "block";
+    }
   }
 
   main();
-
-  // Fillout 表單提交完成後自動關閉 LIFF
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get("submitted") === "true") {
-    if (isLINEApp()) {
-      // 關閉 LIFF 視窗
-      liff.closeWindow();
-    } else {
-      // 非 LINE App 可顯示完成訊息
-      alert("感謝填寫！我們已收到你的預約資訊。您現在可以關閉視窗");
-    }
-  }
 </script>
 
 </body>
